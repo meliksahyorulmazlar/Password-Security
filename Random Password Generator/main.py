@@ -1,33 +1,34 @@
-import random,pyperclip
+import random
+import string
+import pyperclip
+from typing import List, Tuple
 
-lower_case_letters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
-
-upper_case_letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
-
-numbers = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
-
-punctuation = ['!', '"', '#', '$', '%', '&', "'", '(', ')', '*', '+', ',', '-', '.', '/', ':', ';', '<', '=', '>', '?', '@', '[', '\\', ']', '^', '_', '`', '{', '|', '}', '~']
-
-def main():
+def main() -> None:
+    """
+    Generates a random password based on user input specifying the number of different character types
+    (lowercase letters, uppercase letters, numbers, punctuation marks) to include in the password.
+    The password is then printed and copied to the clipboard.
+    """
     print("Welcome to the password generator")
-    password_list:list = []
-    lower_cases:int = int(input("How many lower case letters would you like in your password?\n"))
-    upper_cases:int = int(input("How many upper case letters would you like in your password?\n"))
-    nums:int = int(input("How many numbers would you like in your password?\n"))
-    punctuation_marks:int = int(input("How many punctuation marks would you like in your password?\n"))
-    for i in range(lower_cases):
-        password_list.append(random.choice(lower_case_letters))
-    for j in range(upper_cases):
-        password_list.append(random.choice(upper_case_letters))
-    for k in range(nums):
-        password_list.append(random.choice(numbers))
-    for l in range(punctuation_marks):
-        password_list.append(random.choice(punctuation))
+
+    # List of tuples containing the count and corresponding character set
+    char_types: List[Tuple[int, str]] = [
+        (int(input(f"How many {type_} would you like in your password?\n")), chars)
+        for type_, chars in [
+            ("lower case letters", string.ascii_lowercase),
+            ("upper case letters", string.ascii_uppercase),
+            ("numbers", string.digits),
+            ("punctuation marks", string.punctuation)
+        ]
+    ]
+
+    password_list: List[str] = [random.choice(chars) for count, chars in char_types for _ in range(count)]
     random.shuffle(password_list)
-    password:str = "".join(password_list)
+
+    # Join the list into a string and print the password
+    password: str = ''.join(password_list)
     print(password)
     pyperclip.copy(password)
-
 
 if __name__ == "__main__":
     main()

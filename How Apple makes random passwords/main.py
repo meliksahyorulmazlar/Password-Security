@@ -1,87 +1,89 @@
-#How Apple makes random passwords
+import random
+import string
+import pyperclip
+from typing import List
 
-#There are 2 types of passwords that apple makes
-
-#one is known as easy to type
-#which in total has 20 characters
-#It always consists of:
-#One upper case letter
-#Sixteen lower cases
-#Two hyphens, one on the 7th positon and another one on the 14th position
-#One number that is left or right of the hyphen or the last character of the password
-
-
-#The other one is known as no special characters which has a length of 15 characters
-#this one does not have any punctuation it only consists of lower,upper case letters and numbers
-#It can consist of 1 to 6 numbers
-#It can consist of 1 to 11 upper case letters (from my data I have found 1 to 10 upper case letters.However, I believe that if i have more passwords the upper case letters can consist of 1 to 11 upper case letters)
-#It can consist of 1 to 11 lower case letters
-#Which will add up to a total of 15 characters
-import random,pyperclip
 
 class ApplePassword:
-    def __init__(self):
-        self.lower_cases:list[str] = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
-        self.upper_cases:list[str] = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
-        self.numbers:list[str] = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+    """
+    A class to generate passwords following Apple's password creation rules.
 
+    Apple generates two types of passwords:
 
-    def EasyToType(self)->None:
-        password_list:list = [random.choice(self.lower_cases) for i in range(20)]
+    1. **Easy-to-Type Password (20 characters)**:
+       - One uppercase letter.
+       - Sixteen lowercase letters.
+       - Two hyphens: one on the 7th position and another on the 14th position.
+       - One number placed either left or right of the hyphen or at the last position of the password.
 
+    2. **No Special Characters Password (15 characters)**:
+       - This password does not contain any punctuation and consists only of:
+         - Lowercase letters.
+         - Uppercase letters.
+         - Numbers.
+       - Number of characters:
+         - 1 to 6 numbers.
+         - 1 to 11 uppercase letters (based on observed data, 1 to 10 uppercase letters is typical, but further analysis may allow up to 11).
+         - 1 to 11 lowercase letters.
+       - The total length is always 15 characters.
 
-        password_list[6] = "-"
-        password_list[13] = "-"
+    Methods:
+    --------
+    easy_to_type() -> None:
+        Generates a random "easy-to-type" password based on Apple's rules.
 
-        random_number: str = str(random.randint(0, 9))
-        possible_number_positions = [5,7,12,14,19]
-        number_position = random.choice(possible_number_positions)
-        password_list[number_position] = random_number
+    no_special_characters() -> None:
+        Generates a random password with no special characters, based on the second rule.
+    """
 
+    def __init__(self) -> None:
+        self.lower_cases: str = string.ascii_lowercase
+        self.upper_cases: str = string.ascii_uppercase
+        self.numbers: str = string.digits
 
-        upper_letter = random.choice(self.upper_cases)
-        possible_upper_positions = [0, 1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19]
-        possible_upper_positions.remove(number_position)
-        upper_position = random.choice(possible_upper_positions)
-        password_list[upper_position] = upper_letter
+    def easy_to_type(self) -> None:
+        # Create base password with placeholders for hyphens
+        password_list: List[str] = [random.choice(self.lower_cases) for _ in range(20)]
+        password_list[6], password_list[13] = "-", "-"
 
-        password = "".join(password_list)
+        # Insert number
+        number_pos: int = random.choice([5, 7, 12, 14, 19])
+        password_list[number_pos] = random.choice(self.numbers)
 
-        print(password)
-        # The following line of code will copy the password for you to your clipboard
-        pyperclip.copy(password)
+        # Insert uppercase letter
+        upper_pos: int = random.choice([i for i in range(20) if i not in {6, 13, number_pos}])
+        password_list[upper_pos] = random.choice(self.upper_cases)
 
+        # Generate and copy password
+        generated_password: str = "".join(password_list)
+        print(generated_password)
+        pyperclip.copy(generated_password)
 
+    def no_special_characters(self) -> None:
+        # Randomly distribute characters
+        lower_case_count: int = random.randint(1, 11)
+        upper_case_count: int = random.randint(1, 11 - lower_case_count + 1)
+        numbers_count: int = 15 - (lower_case_count + upper_case_count)
 
-
-    def NoSpecialCharacters(self)->None:
-
-        lower_case_count:int = random.randint(1,11)
-        upper_case_count:int = random.randint(1,(11-lower_case_count+1))
-        numbers:int = 15 - (lower_case_count+upper_case_count)
-
-        password_list = []
-
-        for i in range(lower_case_count):
-            password_list.append(random.choice(self.lower_cases))
-        for j in range(upper_case_count):
-            password_list.append(random.choice(self.upper_cases))
-        for k in range(numbers):
-            password_list.append(random.choice(self.numbers))
+        password_list: List[str] = (
+            [random.choice(self.lower_cases) for _ in range(lower_case_count)] +
+            [random.choice(self.upper_cases) for _ in range(upper_case_count)] +
+            [random.choice(self.numbers) for _ in range(numbers_count)]
+        )
 
         random.shuffle(password_list)
-        password:str = ''.join(password_list)
+        generated_password: str = "".join(password_list)
 
-
-        print(password)
-        #The following line of code will copy the password for you to your clipboard
-        pyperclip.copy(password)
+        print(generated_password)
+        pyperclip.copy(generated_password)
 
 
 if __name__ == "__main__":
-    password = ApplePassword()
-    type = input("Do you want an easy password or password with no special characters?\n")
-    if type == "easy":
-        password.EasyToType()
-    else:
-        password.NoSpecialCharacters()
+    password: ApplePassword = ApplePassword()
+    password_type: str = input("Password type ('easy' for simple, anything else for no special characters):\n").lower()
+
+    match password_type:
+        case "easy":
+            password.easy_to_type()
+        case _:
+            password.no_special_characters()
